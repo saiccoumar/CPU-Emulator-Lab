@@ -8,16 +8,16 @@ public:
     CPU();
     ~CPU();
 
-    void executeInstruction(RAM& ram, uint16_t instruction_bytes);
+    void executeInstruction(RAM& ram, uint8_t opcode, uint16_t address);
     void updateCache(uint16_t location, uint8_t value);
     uint8_t getCachedValue(uint16_t location);
 
-    void ADC(RAM &ram, uint16_t instruction_byte);
-    void SBC(RAM &ram, uint16_t instruction_byte);
-    void LDA(RAM &ram, uint16_t instruction_byte);
-    void AND(RAM &ram, uint16_t instruction_byte);
-    void EOR(RAM &ram, uint16_t instruction_byte);
-    void JMP(RAM &ram, uint16_t instruction_byte);
+    void ADC(RAM &ram, uint16_t address);
+    void SBC(RAM &ram, uint16_t address);
+    void LDA(RAM &ram, uint16_t address);
+    void AND(RAM &ram, uint16_t address);
+    void EOR(RAM &ram, uint16_t address);
+    void JMP(RAM &ram, uint16_t address);
     void PSH(RAM &ram);
     void POP(RAM &ram);
     void process_instructions(RAM& ram, uint16_t start_address, uint16_t end_address);

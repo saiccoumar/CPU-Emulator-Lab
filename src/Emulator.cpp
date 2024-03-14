@@ -12,7 +12,8 @@ int main()
     std::ifstream inputFile("instructions.txt");
 
     // Check if the file is open
-    if (!inputFile.is_open()) {
+    if (!inputFile.is_open())
+    {
         std::cerr << "Error opening the file." << std::endl;
         return 1;
     }
@@ -21,13 +22,16 @@ int main()
     std::string line;
     uint16_t address = 0x0000;
 
+
     while (std::getline(inputFile, line)) {
-        std::cout << line << std::endl;
+    std::cout << line << std::endl;
 
-        std::istringstream iss(line);
-        std::bitset<8> byteValue;
+    std::istringstream iss(line);
 
-        // Keep reading 8 characters (bits) until the end of the line
+    // Keep reading 5 characters (bits) until the end of the line
+    for (int j = 0; j < 3; ++j) {
+        uint8_t byteValue = 0;
+
         for (int i = 0; i < 8; ++i) {
             char bitChar;
             if (!(iss >> bitChar)) {
@@ -42,16 +46,16 @@ int main()
             }
 
             // Set the corresponding bit in the byteValue
-            byteValue[i] = (bitChar == '1');
+            byteValue |= (bitChar == '1') << (7 - i);
         }
 
-        // Convert the bitset to a byte and write it to RAM
-        ram.writeInstructionByte(address, static_cast<uint8_t>(byteValue.to_ulong()));
+        // Write the byte to RAM
+        ram.writeInstructionByte(address, byteValue);
 
         // Increment the address for the next byte
         ++address;
     }
-
+}
 
     std::ifstream inputDataFile("data.txt");
 

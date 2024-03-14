@@ -38,24 +38,6 @@ CPU::~CPU()
     // std::cout << "CPU destructed." << std::endl;
 }
 
-void CPU::process_instructions(RAM &ram, uint16_t start_address, uint16_t end_address)
-{
-    PC = start_address;
-
-    // Fetch-Execute Cycle
-    while (PC < end_address)
-    {
-        // Fetch 16 bytes from RAM
-        uint16_t instruction_byte;
-
-        instruction_byte = ram.readByte(PC);
-        // Decode and execute the instruction
-        executeInstruction(ram, instruction_byte);
-        // Move to the next 8-byte block
-        PC += 2;
-    }
-}
-
 void CPU::updateCache(uint16_t location, uint8_t value)
 {
     // Check if the location already exists in the cache
@@ -101,37 +83,65 @@ uint8_t CPU::getCachedValue(uint16_t location)
     return -1;
 }
 
-void CPU::executeInstruction(RAM &ram, uint16_t instruction_byte)
+void CPU::process_instructions(RAM &ram, uint16_t start_address, uint16_t end_address)
+{
+    PC = start_address;
+
+    // Fetch-Execute Cycle
+    while (PC < end_address)
+    {
+        // Fetch 1 byte for opcode from RAM
+        uint8_t opcode = ram.readByte(PC);
+
+        // Fetch 2 bytes for address from RAM
+        uint16_t address = 0;
+        // address |= static_cast<uint16_t>(ram.readByte(PC + 1)) << 0;
+        // address |= static_cast<uint16_t>(ram.readByte(PC + 2)) << 8;
+        address = static_cast<uint16_t>(ram.readByte(PC + 1)) | address << 0;
+        address = static_cast<uint16_t>(ram.readByte(PC + 2)) | address << 8;
+
+        std::cout << "Opcode: 0x" << std::hex << static_cast<int>(opcode) << ", Address: 0x" << address << std::endl;
+
+        // Decode and execute the instruction
+        executeInstruction(ram, opcode, address);
+
+        // Move to the next instruction
+        PC += 3;
+    }
+}
+
+void CPU::executeInstruction(RAM &ram, uint8_t opcode, uint16_t address)
 {
     std::cout << "Executing CPU instruction: < ";
 
     // Print the instruction in binary
-    std::bitset<16> binaryInstruction(instruction_byte);
-    std::cout << binaryInstruction;
-
-    // Extract the first four bits
-    uint8_t opcode = (instruction_byte >> 12) & 0x0F;
+    for (int i = 15; i >= 0; --i)
+    {
+        std::cout << ((address >> i) & 1);
+    }
+     std::cout << " >";
+    std::cout << std::endl;
 
     // Execute instructions based on the opcode
     switch (opcode)
     {
     case 0b0000: // Handle instructions with opcode starting with '0000'
-        ADC(ram, instruction_byte);
+        ADC(ram, address);
         break;
     case 0b0001: // Handle instructions with opcode starting with '0001'
-        SBC(ram, instruction_byte);
+        SBC(ram, address);
         break;
     case 0b0010: // Handle instructions with opcode starting with '0010'
-        LDA(ram, instruction_byte);
+        LDA(ram, address);
         break;
     case 0b0011: // Handle instructions with opcode starting with '0011'
-        AND(ram, instruction_byte);
+        AND(ram, address);
         break;
     case 0b0100: // Handle instructions with opcode starting with '0100'
-        EOR(ram, instruction_byte);
+        EOR(ram, address);
         break;
     case 0b0101: // Handle instructions with opcode starting with '0101'
-        JMP(ram, instruction_byte);
+        JMP(ram, address);
         break;
     case 0b0110: // Handle instructions with opcode starting with '0110'
         PSH(ram);
@@ -145,14 +155,11 @@ void CPU::executeInstruction(RAM &ram, uint16_t instruction_byte)
         break;
     }
 
-    std::cout << " >";
-    std::cout << std::endl;
+   
 }
 
-void CPU::ADC(RAM &ram, uint16_t instruction_byte)
+void CPU::ADC(RAM &ram, uint16_t address)
 {
-    // Extracting the address from bits 3 to 7 of the instruction byte
-    uint16_t address = (instruction_byte & 0b0000111111110000) >> 4;
     uint8_t value = getCachedValue(address);
     if (value == -1)
     {
@@ -210,16 +217,14 @@ void CPU::ADC(RAM &ram, uint16_t instruction_byte)
     std::cout << "ADC instruction executed. Result stored at memory address: " << std::hex << static_cast<int>(address) << std::endl;
 }
 
-void CPU::SBC(RAM &ram, uint16_t instruction_byte)
+void CPU::SBC(RAM &ram, uint16_t address)
 {
-    // Extracting the address from bits 3 to 7 of the instruction byte
-    uint16_t address = (instruction_byte & 0b0000111111110000) >> 4;
     uint8_t value = getCachedValue(address);
     if (value == -1)
     {
         value = ram.readByte(address); // Reading the value from memory at the specified address
     }
-    
+
     // Subtracting the value from the accumulator, considering the carry flag
     uint8_t result = value - A - ((STATUS & 0b01000000) ? 0 : 1); // Subtracting the carry flag if it's clear
 
@@ -271,10 +276,8 @@ void CPU::SBC(RAM &ram, uint16_t instruction_byte)
     std::cout << "SBC instruction executed. Result stored at memory address: " << std::hex << static_cast<int>(address) << std::endl;
 }
 
-void CPU::LDA(RAM &ram, uint16_t instruction_byte)
+void CPU::LDA(RAM &ram, uint16_t address)
 {
-    // Extracting the address from bits 3 to 7 of the instruction byte
-    uint16_t address = (instruction_byte & 0b0000111111110000) >> 4;
     uint8_t value = getCachedValue(address);
     if (value == -1)
     {
@@ -283,17 +286,15 @@ void CPU::LDA(RAM &ram, uint16_t instruction_byte)
 
     // Loading the value into the accumulator (A register)
     A = value;
-    
+
     updateCache(address, value);
 
     // Displaying the operation
     std::cout << "LDA instruction executed. Value loaded into accumulator (A): " << std::hex << static_cast<int>(A) << std::endl;
 }
 
-void CPU::AND(RAM &ram, uint16_t instruction_byte)
+void CPU::AND(RAM &ram, uint16_t address)
 {
-    // Extracting the address from bits 3 to 7 of the instruction byte
-    uint16_t address = (instruction_byte & 0b0000111111110000) >> 4;
     uint8_t value = getCachedValue(address);
     if (value == -1)
     {
@@ -328,10 +329,8 @@ void CPU::AND(RAM &ram, uint16_t instruction_byte)
     std::cout << "AND instruction executed. Result stored in accumulator (A): " << std::hex << static_cast<int>(A) << std::endl;
 }
 
-void CPU::EOR(RAM &ram, uint16_t instruction_byte)
+void CPU::EOR(RAM &ram, uint16_t address)
 {
-    // Extracting the address from bits 3 to 7 of the instruction byte
-    uint16_t address = (instruction_byte & 0b0000111111110000) >> 4;
     uint8_t value = getCachedValue(address);
     if (value == -1)
     {
@@ -365,10 +364,8 @@ void CPU::EOR(RAM &ram, uint16_t instruction_byte)
     std::cout << "EOR instruction executed. Result stored in accumulator (A): " << std::hex << static_cast<int>(A) << std::endl;
 }
 
-void CPU::JMP(RAM &ram, uint16_t instruction_byte)
+void CPU::JMP(RAM &ram, uint16_t address)
 {
-    // Extracting the address from bits 3 to 7 of the instruction byte
-    uint16_t address = (instruction_byte & 0b0000111111110000) >> 4;
     // Set the program counter (PC) to the extracted address
     PC = address;
 
