@@ -25,7 +25,7 @@ uint8_t STATUS; // Status flag register. Status flags are in order (-)(C)(Z)(I)(
 CPU::CPU()
 {
     PC = 0;
-    SP = 0;
+    SP = 0x100;
     A = 0;
     STATUS = 0b00000000;
     // Constructor implementation
@@ -78,7 +78,7 @@ uint8_t CPU::getCachedValue(uint16_t location)
     }
 
     // If the location doesn't exist in the cache, return 0 (cache miss)
-    return -1;
+    return 0;
 }
 
 void CPU::process_instructions(RAM &ram, uint16_t start_address, uint16_t end_address)
@@ -159,7 +159,7 @@ void CPU::executeInstruction(RAM &ram, uint8_t opcode, uint16_t address)
 void CPU::ADC(RAM &ram, uint16_t address)
 {
     uint8_t value = getCachedValue(address);
-    if (value == -1)
+    if (value == 0)
     {
         value = ram.readByte(address); // Reading the value from memory at the specified address
     }
@@ -218,14 +218,13 @@ void CPU::ADC(RAM &ram, uint16_t address)
 void CPU::SBC(RAM &ram, uint16_t address)
 {
     uint8_t value = getCachedValue(address);
-    if (value == -1)
+    if (value == 0)
     {
         value = ram.readByte(address); // Reading the value from memory at the specified address
     }
 
     // Subtracting the value from the accumulator, considering the carry flag
-    uint8_t result = value - A - ((STATUS & 0b01000000) ? 0 : 1); // Subtracting the carry flag if it's clear
-
+    uint8_t result = value - A - (STATUS & 0b01000000); // Subtracting the carry flag if it's clear
     // Setting the zero flag if the result is zero
     if (result == 0)
     {
@@ -277,7 +276,7 @@ void CPU::SBC(RAM &ram, uint16_t address)
 void CPU::LDA(RAM &ram, uint16_t address)
 {
     uint8_t value = getCachedValue(address);
-    if (value == -1)
+    if (value == 0)
     {
         value = ram.readByte(address); // Reading the value from memory at the specified address
     }
@@ -330,7 +329,7 @@ void CPU::AND(RAM &ram, uint16_t address)
 void CPU::EOR(RAM &ram, uint16_t address)
 {
     uint8_t value = getCachedValue(address);
-    if (value == -1)
+    if (value == 0)
     {
         value = ram.readByte(address); // Reading the value from memory at the specified address
     }

@@ -25,7 +25,7 @@ uint8_t RAM::readByte(uint16_t address) const
     {
         // Handle out-of-bounds access
         std::cerr << "Error: Attempted to read from invalid memory address." << std::endl;
-        return 0; // Return a default value (you may choose a different approach)
+        return 0xFF; // Return a default value 
     }
 }
 void RAM::writeInstructionByte(uint16_t address, uint8_t value)
@@ -58,10 +58,10 @@ void RAM::writeStackByte(uint16_t address, uint8_t value)
 {
     if (address < memory.size())
     {
-        if (address < 512 && address > 256)
+        if (address < 512 && address >= 256)
         {
             memory[address] = value;
-            std::cerr << "Wrote to instruction space memory address."
+            std::cerr << "Wrote to stack space memory address."
                       << " Address: 0x" << std::hex << address
                       << ", Memory Size: 0x" << memory.size() << std::endl;
         }
