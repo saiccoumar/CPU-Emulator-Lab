@@ -8,4 +8,5 @@
 #include <string>
 #include <bitset>
 #include <sstream>
+#include "CPU.h"
 // TODO: Reference additional headers your program requires here.

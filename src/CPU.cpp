@@ -29,13 +29,11 @@ CPU::CPU()
     A = 0;
     STATUS = 0b00000000;
     // Constructor implementation
-    // std::cout << "CPU initialized." << std::endl;
 }
 
 CPU::~CPU()
 {
     // Destructor implementation
-    // std::cout << "CPU destructed." << std::endl;
 }
 
 void CPU::updateCache(uint16_t location, uint8_t value)

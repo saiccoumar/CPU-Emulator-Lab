@@ -4,6 +4,8 @@
 #include <vector>
 #include <cstdint>
 #include <iomanip>
+#include <iostream>
+#include <fstream>
 
 class RAM {
 public:
@@ -15,7 +17,7 @@ public:
     void writeByte(uint16_t address, uint8_t value);
     void writeStackByte(uint16_t address, uint8_t value);
     void writeInstructionByte(uint16_t address, uint8_t value);
-    void dump_memory_at_address(uint16_t address) const;
+    void dump_memory_at_address(uint16_t address, std::ostream& outFile) const;
     void dump_memory() const;  // Declaration for the dump_memory function
 
 private:
