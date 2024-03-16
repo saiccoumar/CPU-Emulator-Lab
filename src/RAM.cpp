@@ -30,84 +30,31 @@ uint8_t RAM::readByte(uint16_t address) const
 }
 void RAM::writeInstructionByte(uint16_t address, uint8_t value)
 {
-    if (address < memory.size())
-    {
-        if (address < 256)
-        {
-            memory[address] = value;
-            std::cerr << "Wrote to instruction space memory address."
-                      << " Address: 0x" << std::hex << address
-                      << ", Memory Size: 0x" << memory.size() << std::endl;
-        }
-        else
-        {
-            std::cerr << "Error: Attempted to write instruction byte outside the Instruction space." << std::endl;
-        }
-    }
-    else
-    {
-        // Handle out-of-bounds access
-        std::cerr << "Error: Attempted to write to invalid memory address."
-                  << " Address: 0x" << std::hex << address
-                  << ", Memory Size: 0x" << memory.size() << std::endl;
-    }
+    // TODO: Implement Write Instruction Byte
+
+
     dump_memory();
 }
 
 void RAM::writeStackByte(uint16_t address, uint8_t value)
 {
-    if (address < memory.size())
-    {
-        if (address < 512 && address >= 256)
-        {
-            memory[address] = value;
-            std::cerr << "Wrote to stack space memory address."
-                      << " Address: 0x" << std::hex << address
-                      << ", Memory Size: 0x" << memory.size() << std::endl;
-        }
-        else
-        {
-            std::cerr << "Error: Attempted to write instruction byte outside the Instruction space." << std::endl;
-        }
-    }
-    else
-    {
-        // Handle out-of-bounds access
-        std::cerr << "Error: Attempted to write to invalid memory address."
-                  << " Address: 0x" << std::hex << address
-                  << ", Memory Size: 0x" << memory.size() << std::endl;
-    }
+    // TODO: Implement Write Stack Byte
+
+
     dump_memory();
 }
 
 void RAM::writeByte(uint16_t address, uint8_t value)
 {
-    if (address < memory.size())
-    {
-        // Check if the address is within the valid range
-        if (address < 512)
-        {
-            std::cerr << "Error: Attempted to write to reserved instruction or stack space." << std::endl;
-        }
-        else
-        {
-            memory[address] = value;
-            std::cerr << "Wrote to memory address."
-                      << " Address: 0x" << std::hex << address
-                      << ", Memory Size: 0x" << memory.size() << std::endl;
-        }
-    }
-    else
-    {
-        // Handle out-of-bounds access
-        std::cerr << "Error: Attempted to write to invalid memory address."
-                  << " Address: 0x" << std::hex << address
-                  << ", Memory Size: 0x" << memory.size() << std::endl;
-    }
+    // TODO: Implement Write Byte
+
+
     dump_memory();
 }
 
 void RAM::dump_memory_at_address(uint16_t address, std::ostream& out) const {
+    // DO NOT MODIFY!!
+
     // Every 16 bytes, create a line of dump output in hexadecimal
     // Print starting address of bytes in this line of output
     out << "Address 0x" << std::hex << std::setw(4) << address << ": ";
@@ -142,6 +89,8 @@ void RAM::dump_memory_at_address(uint16_t address, std::ostream& out) const {
 
 
 void RAM::dump_memory() const {
+    // DO NOT MODIFY!!
+
     const int bytesPerLine = 16;
     
     // Open file for writing

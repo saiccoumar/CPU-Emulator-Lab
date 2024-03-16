@@ -50,15 +50,10 @@ void CPU::updateCache(uint16_t location, uint8_t value)
     }
 
     // If the location doesn't exist in the cache, find the least recently used cache register to replace
-    // Cache policy is to replace the location that's closest because it's the cheapest
+    // Cache policy is to replace the location that's smallest
+    // TODO: Implement Cache Policy 
     int mostRecentCacheRegister = 0;
-    for (int i = 0; i < 3; i++)
-    {
-        if (cache[i].location < cache[mostRecentCacheRegister].location)
-        {
-            mostRecentCacheRegister = i;
-        }
-    }
+    
 
     // Update the least recently used cache register with the new location and value
     cache[mostRecentCacheRegister].location = location;
@@ -166,47 +161,9 @@ void CPU::ADC(RAM &ram, uint16_t address)
 
     // Adding the value to the accumulator
     // Note: This addition might cause overflow, and the carry flag should be considered.
-    uint8_t result = A + value + (STATUS & 0b01000000); // Adding the carry flag
+    uint8_t result = 0;
 
-    // Setting the zero flag if the result is zero
-    if (result == 0)
-    {
-        STATUS |= 0b00100000; // Set Z flag
-    }
-    else
-    {
-        STATUS &= ~0b00100000; // Clear Z flag
-    }
-
-    // Setting the carry flag if there's overflow
-    if (result > 255)
-    {
-        STATUS |= 0b01000000; // Set C flag
-    }
-    else
-    {
-        STATUS &= ~0b01000000; // Clear C flag
-    }
-
-    // Setting the overflow flag if the result overflows a signed 8-bit value
-    if ((A ^ value) & 0b10000000 && (A ^ result) & 0b10000000)
-    {
-        STATUS |= 0b00000010; // Set O flag
-    }
-    else
-    {
-        STATUS &= ~0b00000010; // Clear O flag
-    }
-
-    // Setting the negative flag if the result's most significant bit is set
-    if (result & 0b10000000)
-    {
-        STATUS |= 0b00000001; // Set N flag
-    }
-    else
-    {
-        STATUS &= ~0b00000001; // Clear N flag
-    }
+    // TODO: Implement ABC
 
     // Writing the result back to memory at the same address
     ram.writeByte(address, result & 0xFF);
@@ -224,46 +181,9 @@ void CPU::SBC(RAM &ram, uint16_t address)
     }
 
     // Subtracting the value from the accumulator, considering the carry flag
-    uint8_t result = value - A - (STATUS & 0b01000000); // Subtracting the carry flag if it's clear
-    // Setting the zero flag if the result is zero
-    if (result == 0)
-    {
-        STATUS |= 0b00100000; // Set Z flag
-    }
-    else
-    {
-        STATUS &= ~0b00100000; // Clear Z flag
-    }
-
-    // Setting the carry flag if there's no borrow (result >= 0)
-    if (result < 256)
-    {
-        STATUS |= 0b01000000; // Set C flag
-    }
-    else
-    {
-        STATUS &= ~0b01000000; // Clear C flag
-    }
-
-    // Setting the overflow flag if the result overflows a signed 8-bit value
-    if ((A ^ value) & 0b10000000 && (A ^ result) & 0b10000000)
-    {
-        STATUS |= 0b00000010; // Set O flag
-    }
-    else
-    {
-        STATUS &= ~0b00000010; // Clear O flag
-    }
-
-    // Setting the negative flag if the result's most significant bit is set
-    if (result & 0b10000000)
-    {
-        STATUS |= 0b00000001; // Set N flag
-    }
-    else
-    {
-        STATUS &= ~0b00000001; // Clear N flag
-    }
+    uint8_t result = 0 ; // Subtracting the carry flag if it's clear
+     
+    // TODO: Implement SBC
 
     // Writing the result back to memory at the same address
     ram.writeByte(address, result & 0xFF);
@@ -299,28 +219,7 @@ void CPU::AND(RAM &ram, uint16_t address)
     }
     updateCache(address, value);
 
-    // Performing bitwise AND operation between the accumulator (A) and the value
-    A &= value;
-
-    // Setting the zero flag if the result is zero
-    if (A == 0)
-    {
-        STATUS |= 0b00100000; // Set Z flag
-    }
-    else
-    {
-        STATUS &= ~0b00100000; // Clear Z flag
-    }
-
-    // Setting the negative flag if the result's most significant bit is set
-    if (A & 0b10000000)
-    {
-        STATUS |= 0b00000001; // Set N flag
-    }
-    else
-    {
-        STATUS &= ~0b00000001; // Clear N flag
-    }
+    // TODO: Implement AND
 
     // Displaying the operation
     std::cout << "AND instruction executed. Result stored in accumulator (A): " << std::hex << static_cast<int>(A) << std::endl;
@@ -335,27 +234,8 @@ void CPU::EOR(RAM &ram, uint16_t address)
     }
 
     // Performing bitwise XOR (Exclusive OR) operation between the accumulator (A) and the value
-    A ^= value;
-
-    // Setting the zero flag if the result is zero
-    if (A == 0)
-    {
-        STATUS |= 0b00100000; // Set Z flag
-    }
-    else
-    {
-        STATUS &= ~0b00100000; // Clear Z flag
-    }
-
-    // Setting the negative flag if the result's most significant bit is set
-    if (A & 0b10000000)
-    {
-        STATUS |= 0b00000001; // Set N flag
-    }
-    else
-    {
-        STATUS &= ~0b00000001; // Clear N flag
-    }
+    
+    // TODO: Implement EOR
 
     // Displaying the operation
     std::cout << "EOR instruction executed. Result stored in accumulator (A): " << std::hex << static_cast<int>(A) << std::endl;
@@ -364,7 +244,8 @@ void CPU::EOR(RAM &ram, uint16_t address)
 void CPU::JMP(RAM &ram, uint16_t address)
 {
     // Set the program counter (PC) to the extracted address
-    PC = address;
+    
+    // TODO: Implement JMP
 
     // Displaying the operation
     std::cout << "JMP instruction executed. Jumping to address: " << std::hex << static_cast<int>(address) << std::endl;
@@ -372,11 +253,7 @@ void CPU::JMP(RAM &ram, uint16_t address)
 
 void CPU::PSH(RAM &ram)
 {
-    // Write the accumulator (A) value to the stack at memory location SP
-    ram.writeStackByte(SP, A);
-
-    // Increment the stack pointer (SP)
-    SP++;
+    // TODO: Implement PSH
 
     // Displaying the operation
     std::cout << "PSH instruction executed. Accumulator value pushed onto stack." << std::endl;
@@ -384,11 +261,7 @@ void CPU::PSH(RAM &ram)
 
 void CPU::POP(RAM &ram)
 {
-    // Decrement the stack pointer (SP)
-    SP--;
-
-    // Read the value from the stack at memory location SP into the accumulator (A)
-    A = ram.readByte(SP);
+    // TODO: Implement POP
 
     // Displaying the operation
     std::cout << "POP instruction executed. Accumulator value popped from stack." << std::endl;

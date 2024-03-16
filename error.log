@@ -1200,5 +1200,5 @@ Wrote to memory address. Address: 0x6a8, Memory Size: 0x800
 Wrote to memory address. Address: 0x6a9, Memory Size: 0x800
 Wrote to memory address. Address: 0x6aa, Memory Size: 0x800
 Wrote to memory address. Address: 0x6ab, Memory Size: 0x800
-Error: Attempted to write instruction byte outside the Instruction space.
+Wrote to stack space memory address. Address: 0x100, Memory Size: 0x800
 NOP Unsupported opcode: 100
