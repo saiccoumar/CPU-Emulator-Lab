@@ -12,22 +12,12 @@ CacheRegister cache[3];
 uint16_t PC;    // 16-bit Program Counter
 uint16_t SP;    // 8-bit Stack Pointer
 uint8_t A;      // 8-bit Accumulator
-uint8_t STATUS; // Status flag register. Status flags are in order (-)(C)(Z)(I)(D)(B)(O)(N)
-// The first bit is unused.
-// C is the carry flag which is set if the last operation caused an overflow or underflow
-// Z is the zero flag which is set if the result of the last operation was 0
-// I is interrupt disable. The processor will not respond to I/O interrupts when this is set
-// D is decimal for BCD arithmetic during addition/subtraction
-// B is break and set when BRK has been executed
-// O is for signed overflow
-// N is negative which is set if the result of last operation had bit 7 set to one
 
 CPU::CPU()
 {
     PC = 0;
     SP = 0x100;
     A = 0;
-    STATUS = 0b00000000;
     // Constructor implementation
 }
 
@@ -38,6 +28,7 @@ CPU::~CPU()
 
 void CPU::updateCache(uint16_t location, uint8_t value)
 {
+    // DO NOT MODIFY!!
     // Check if the location already exists in the cache
     for (int i = 0; i < 3; i++)
     {
@@ -62,6 +53,7 @@ void CPU::updateCache(uint16_t location, uint8_t value)
 
 uint8_t CPU::getCachedValue(uint16_t location)
 {
+    // DO NOT MODIFY!!
     // Check if the location exists in the cache
     for (int i = 0; i < 3; i++)
     {
@@ -78,6 +70,7 @@ uint8_t CPU::getCachedValue(uint16_t location)
 
 void CPU::process_instructions(RAM &ram, uint16_t start_address, uint16_t end_address)
 {
+    //DO NOT MODIFY
     PC = start_address;
 
     // Fetch-Execute Cycle
@@ -88,8 +81,6 @@ void CPU::process_instructions(RAM &ram, uint16_t start_address, uint16_t end_ad
 
         // Fetch 2 bytes for address from RAM
         uint16_t address = 0;
-        // address |= static_cast<uint16_t>(ram.readByte(PC + 1)) << 0;
-        // address |= static_cast<uint16_t>(ram.readByte(PC + 2)) << 8;
         address = static_cast<uint16_t>(ram.readByte(PC + 1)) | address << 0;
         address = static_cast<uint16_t>(ram.readByte(PC + 2)) | address << 8;
 

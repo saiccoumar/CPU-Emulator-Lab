@@ -31,7 +31,7 @@ uint8_t RAM::readByte(uint16_t address) const
 void RAM::writeInstructionByte(uint16_t address, uint8_t value)
 {
     // TODO: Implement Write Instruction Byte
-
+    
 
     dump_memory();
 }
