@@ -91,8 +91,8 @@ int main()
         }
     }
 
-    ram.dump_memory_at_address(0x0000, std::cout);
-    ram.dump_memory_at_address(0x0200, std::cout);
+    // ram.dump_memory_at_address(0x0000, std::cout);
+    // ram.dump_memory_at_address(0x0200, std::cout);
 
     // 2. CPU starts reading/executing instructions from program space
     cpu.process_instructions(ram, 0x0000, 0x004);

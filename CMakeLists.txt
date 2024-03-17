@@ -32,6 +32,10 @@ target_include_directories(test_RAM PRIVATE "headers")
 enable_testing()
 
 # Add tests
+add_test(NAME test_read_ram COMMAND test_RAM read_ram)
+add_test(NAME test_write_instruction_ram COMMAND test_RAM write_instruction)
+add_test(NAME test_write_stack_ram COMMAND test_RAM write_stack)
+add_test(NAME test_write_byte_ram COMMAND test_RAM write_byte)
 add_test(NAME test_cpu_lda COMMAND test_CPU test_lda)
 add_test(NAME test_cpu_adc COMMAND test_CPU test_adc)
 add_test(NAME test_cpu_sbc COMMAND test_CPU test_sbc)
@@ -40,10 +44,7 @@ add_test(NAME test_cpu_eor COMMAND test_CPU test_eor)
 add_test(NAME test_cpu_jmp COMMAND test_CPU test_jmp)
 add_test(NAME test_cpu_psh COMMAND test_CPU test_psh)
 add_test(NAME test_cpu_pop COMMAND test_CPU test_pop)
-add_test(NAME test_read_ram COMMAND test_RAM read_ram)
-add_test(NAME test_write_instruction_ram COMMAND test_RAM write_instruction)
-add_test(NAME test_write_stack_ram COMMAND test_RAM write_stack)
-add_test(NAME test_write_byte_ram COMMAND test_RAM write_byte)
+
 
 # CPack settings
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

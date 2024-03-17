@@ -12,22 +12,12 @@ CacheRegister cache[3];
 uint16_t PC;    // 16-bit Program Counter
 uint16_t SP;    // 8-bit Stack Pointer
 uint8_t A;      // 8-bit Accumulator
-uint8_t STATUS; // Status flag register. Status flags are in order (-)(C)(Z)(I)(D)(B)(O)(N)
-// The first bit is unused.
-// C is the carry flag which is set if the last operation caused an overflow or underflow
-// Z is the zero flag which is set if the result of the last operation was 0
-// I is interrupt disable. The processor will not respond to I/O interrupts when this is set
-// D is decimal for BCD arithmetic during addition/subtraction
-// B is break and set when BRK has been executed
-// O is for signed overflow
-// N is negative which is set if the result of last operation had bit 7 set to one
 
 CPU::CPU()
 {
     PC = 0;
     SP = 0x100;
     A = 0;
-    STATUS = 0b00000000;
     // Constructor implementation
 }
 
@@ -166,47 +156,7 @@ void CPU::ADC(RAM &ram, uint16_t address)
 
     // Adding the value to the accumulator
     // Note: This addition might cause overflow, and the carry flag should be considered.
-    uint8_t result = A + value + (STATUS & 0b01000000); // Adding the carry flag
-
-    // Setting the zero flag if the result is zero
-    if (result == 0)
-    {
-        STATUS |= 0b00100000; // Set Z flag
-    }
-    else
-    {
-        STATUS &= ~0b00100000; // Clear Z flag
-    }
-
-    // Setting the carry flag if there's overflow
-    if (result > 255)
-    {
-        STATUS |= 0b01000000; // Set C flag
-    }
-    else
-    {
-        STATUS &= ~0b01000000; // Clear C flag
-    }
-
-    // Setting the overflow flag if the result overflows a signed 8-bit value
-    if ((A ^ value) & 0b10000000 && (A ^ result) & 0b10000000)
-    {
-        STATUS |= 0b00000010; // Set O flag
-    }
-    else
-    {
-        STATUS &= ~0b00000010; // Clear O flag
-    }
-
-    // Setting the negative flag if the result's most significant bit is set
-    if (result & 0b10000000)
-    {
-        STATUS |= 0b00000001; // Set N flag
-    }
-    else
-    {
-        STATUS &= ~0b00000001; // Clear N flag
-    }
+    uint8_t result = A + value; 
 
     // Writing the result back to memory at the same address
     ram.writeByte(address, result & 0xFF);
@@ -224,46 +174,7 @@ void CPU::SBC(RAM &ram, uint16_t address)
     }
 
     // Subtracting the value from the accumulator, considering the carry flag
-    uint8_t result = value - A - (STATUS & 0b01000000); // Subtracting the carry flag if it's clear
-    // Setting the zero flag if the result is zero
-    if (result == 0)
-    {
-        STATUS |= 0b00100000; // Set Z flag
-    }
-    else
-    {
-        STATUS &= ~0b00100000; // Clear Z flag
-    }
-
-    // Setting the carry flag if there's no borrow (result >= 0)
-    if (result < 256)
-    {
-        STATUS |= 0b01000000; // Set C flag
-    }
-    else
-    {
-        STATUS &= ~0b01000000; // Clear C flag
-    }
-
-    // Setting the overflow flag if the result overflows a signed 8-bit value
-    if ((A ^ value) & 0b10000000 && (A ^ result) & 0b10000000)
-    {
-        STATUS |= 0b00000010; // Set O flag
-    }
-    else
-    {
-        STATUS &= ~0b00000010; // Clear O flag
-    }
-
-    // Setting the negative flag if the result's most significant bit is set
-    if (result & 0b10000000)
-    {
-        STATUS |= 0b00000001; // Set N flag
-    }
-    else
-    {
-        STATUS &= ~0b00000001; // Clear N flag
-    }
+    uint8_t result = value - A ; 
 
     // Writing the result back to memory at the same address
     ram.writeByte(address, result & 0xFF);
@@ -302,26 +213,6 @@ void CPU::AND(RAM &ram, uint16_t address)
     // Performing bitwise AND operation between the accumulator (A) and the value
     A &= value;
 
-    // Setting the zero flag if the result is zero
-    if (A == 0)
-    {
-        STATUS |= 0b00100000; // Set Z flag
-    }
-    else
-    {
-        STATUS &= ~0b00100000; // Clear Z flag
-    }
-
-    // Setting the negative flag if the result's most significant bit is set
-    if (A & 0b10000000)
-    {
-        STATUS |= 0b00000001; // Set N flag
-    }
-    else
-    {
-        STATUS &= ~0b00000001; // Clear N flag
-    }
-
     // Displaying the operation
     std::cout << "AND instruction executed. Result stored in accumulator (A): " << std::hex << static_cast<int>(A) << std::endl;
 }
@@ -337,27 +228,7 @@ void CPU::EOR(RAM &ram, uint16_t address)
     // Performing bitwise XOR (Exclusive OR) operation between the accumulator (A) and the value
     A ^= value;
 
-    // Setting the zero flag if the result is zero
-    if (A == 0)
-    {
-        STATUS |= 0b00100000; // Set Z flag
-    }
-    else
-    {
-        STATUS &= ~0b00100000; // Clear Z flag
-    }
-
-    // Setting the negative flag if the result's most significant bit is set
-    if (A & 0b10000000)
-    {
-        STATUS |= 0b00000001; // Set N flag
-    }
-    else
-    {
-        STATUS &= ~0b00000001; // Clear N flag
-    }
-
-    // Displaying the operation
+        // Displaying the operation
     std::cout << "EOR instruction executed. Result stored in accumulator (A): " << std::hex << static_cast<int>(A) << std::endl;
 }
 
