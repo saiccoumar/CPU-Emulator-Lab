@@ -1,13 +1,6 @@
 #include "CPU.h"
 #include <iostream>
-class CacheRegister
-{
-public:
-    uint16_t location; // Memory location stored in the cache register
-    uint8_t value;     // Value at the memory location stored in the cache register
 
-    CacheRegister() : location(0), value(0) {} // Default constructor
-};
 CacheRegister cache[3];
 uint16_t PC;    // 16-bit Program Counter
 uint16_t SP;    // 8-bit Stack Pointer
@@ -39,8 +32,7 @@ void CPU::updateCache(uint16_t location, uint8_t value)
         }
     }
 
-    // If the location doesn't exist in the cache, find the least recently used cache register to replace
-    // Cache policy is to replace the location that's closest because it's the cheapest
+    // If the location doesn't exist in the cache, find the cache register with the smallest location to replace
     int mostRecentCacheRegister = 0;
     for (int i = 0; i < 3; i++)
     {
@@ -50,7 +42,7 @@ void CPU::updateCache(uint16_t location, uint8_t value)
         }
     }
 
-    // Update the least recently used cache register with the new location and value
+    // Update the selected cache register with the new location and value
     cache[mostRecentCacheRegister].location = location;
     cache[mostRecentCacheRegister].value = value;
 }
@@ -264,3 +256,4 @@ void CPU::POP(RAM &ram)
     // Displaying the operation
     std::cout << "POP instruction executed. Accumulator value popped from stack." << std::endl;
 }
+

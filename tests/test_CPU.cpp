@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "CPU.h"
+#include <random>
 
 bool testLDA()
 {
@@ -103,11 +104,12 @@ bool testEOR()
     CPU cpu;
 
     ram.writeByte(0x200, 0x01);
+    ram.writeByte(0x300, 0x03);
     cpu.LDA(ram, 0x200);
     cpu.EOR(ram, 0x300);
 
     uint8_t value = ram.readByte(0x300);
-    if (cpu.A == 0x01)
+    if (cpu.A == 0x02)
     {
         std::cout << "Test OR passed." << std::endl;
         return true;
@@ -127,7 +129,6 @@ bool testJMP()
     CPU cpu;
 
     cpu.JMP(ram, 0x000F);
-
 
     if (cpu.PC == 0x000F)
     {
@@ -191,13 +192,83 @@ bool testPOP()
     }
 }
 
+bool testCache1()
+{
+    RAM ram;
+    CPU cpu;
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    // Define the distribution for integers between 0 and 2 (inclusive)
+    std::uniform_int_distribution<int> distribution(0, 2);
+
+    // Generate a random integer between 0 and 2
+    int random_number = distribution(gen);
+
+    cpu.cache[random_number].location = 0x0001;
+    cpu.cache[random_number].value = 0xAF;
+
+    cpu.updateCache(0x0001, 0xCE);
+
+    if (cpu.cache[random_number].value == 0xCE)
+    {
+        std::cout << "Test Cache Update if location is already in cache passed." << std::endl;
+        return true;
+    }
+    else
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            std::cout << "Register " << i << " Location = " << std::hex << static_cast<int>(cpu.cache[i].location) << std::endl;
+            std::cout << "Register " << i << " Value = " << std::hex << static_cast<int>(cpu.cache[i].value) << std::endl;
+        }
+    }
+    std::cout << "Test Cache Update if location is already in cache failed." << std::endl;
+    return false;
+}
+
+
+bool testCache2()
+{
+    RAM ram;
+    CPU cpu;
+
+    cpu.cache[0].location = 0x0003;
+    cpu.cache[0].value = 0xAF;
+
+    cpu.cache[1].location = 0x0002;
+    cpu.cache[1].value = 0xD4;
+
+    cpu.cache[2].location = 0x0001;
+    cpu.cache[2].value = 0x25;
+
+    cpu.updateCache(0x0004, 0xCE);
+
+    if (cpu.cache[2].value == 0xCE)
+    {
+        std::cout << "Test Cache Update if location is doesn't exist in cache passed." << std::endl;
+        return true;
+    }
+    else
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            std::cout << "Register " << i << " Location = " << std::hex << static_cast<int>(cpu.cache[i].location) << std::endl;
+            std::cout << "Register " << i << " Value = " << std::hex << static_cast<int>(cpu.cache[i].value) << std::endl;
+        }
+    }
+    std::cout << "Test Cache Update if location is doesn't exist in cache failed." << std::endl;
+    return false;
+}
+
 int main(int argc, char *argv[])
 {
     int tests_passed = 0;
     int total_tests = 0;
     if (argc == 1 || (argc == 2 && std::string(argv[1]) == "all"))
     {
-        total_tests = 5;
+        total_tests = 7;
         if (testADC())
             tests_passed++;
         if (testLDA())
@@ -209,6 +280,10 @@ int main(int argc, char *argv[])
         if (testEOR())
             tests_passed++;
         if (testJMP())
+            tests_passed++;
+        if (testCache1)
+            tests_passed++;
+        if (testCache2)
             tests_passed++;
     }
     else if (argc == 2 && std::string(argv[1]) == "test_adc")
@@ -265,6 +340,20 @@ int main(int argc, char *argv[])
 
         total_tests = 1;
         if (testPOP())
+            tests_passed++;
+    }
+    else if (argc == 2 && std::string(argv[1]) == "test_cache_1")
+    {
+
+        total_tests = 1;
+        if (testCache1())
+            tests_passed++;
+    }
+    else if (argc == 2 && std::string(argv[1]) == "test_cache_2")
+    {
+
+        total_tests = 1;
+        if (testCache2())
             tests_passed++;
     }
 

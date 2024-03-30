@@ -44,7 +44,8 @@ add_test(NAME test_cpu_eor COMMAND test_CPU test_eor)
 add_test(NAME test_cpu_jmp COMMAND test_CPU test_jmp)
 add_test(NAME test_cpu_psh COMMAND test_CPU test_psh)
 add_test(NAME test_cpu_pop COMMAND test_CPU test_pop)
-
+add_test(NAME test_cache_1 COMMAND test_CPU test_cache_1)
+add_test(NAME test_cache_2 COMMAND test_CPU test_cache_2)
 
 # CPack settings
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

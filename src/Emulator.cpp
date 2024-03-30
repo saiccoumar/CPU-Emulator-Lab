@@ -95,7 +95,7 @@ int main()
     // ram.dump_memory_at_address(0x0200, std::cout);
 
     // 2. CPU starts reading/executing instructions from program space
-    cpu.process_instructions(ram, 0x0000, 0x004);
+    cpu.process_instructions(ram, 0x0000, 0x001C);
 
     // 3. Program Terminates when instructions run out
     errorFile.close();

@@ -3,9 +3,19 @@
 
 #include "RAM.h" // Include the header file for RAM
 #include <bitset>
+class CacheRegister
+{
+public:
+    uint16_t location; // Memory location stored in the cache register
+    uint8_t value;     // Value at the memory location stored in the cache register
+
+    CacheRegister() : location(0), value(0) {} // Default constructor
+};
+
 class CPU
 {
 public:
+CacheRegister cache[3];
     uint16_t PC;    // 16-bit Program Counter
     uint16_t SP;    // 8-bit Stack Pointer
     uint8_t A;      // 8-bit Accumulator
