@@ -196,7 +196,7 @@ void CPU::LDA(RAM &ram, uint16_t address)
 void CPU::AND(RAM &ram, uint16_t address)
 {
     uint8_t value = getCachedValue(address);
-    if (value == -1)
+    if (value == 0)
     {
         value = ram.readByte(address); // Reading the value from memory at the specified address
     }

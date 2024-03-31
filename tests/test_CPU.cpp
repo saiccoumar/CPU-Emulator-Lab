@@ -49,18 +49,18 @@ bool testADC()
 
 bool testSBC()
 {
-    // Load A = 0x01. Add A to value at 0x200 (0x01). 0x01 + 0x01 = 0x02
+    // Load A = 0x01. Subtract A from value at 0x300 (0x02). 0x03 - 0x02 = 0x01
     RAM ram;
     CPU cpu;
-
+    ram.writeByte(0x300, 0x02);
     ram.writeByte(0x200, 0x01);
     cpu.LDA(ram, 0x200);
-    uint8_t value = ram.readByte(0x200);
+    uint8_t value = ram.readByte(0x300);
     std::cout << "Value Before SBC = " << std::hex << static_cast<int>(value) << std::endl;
-    cpu.SBC(ram, 0x200);
+    cpu.SBC(ram, 0x300);
 
-    value = ram.readByte(0x200);
-    if (value == 0x00)
+    value = ram.readByte(0x300);
+    if (value == 0x01)
     {
         std::cout << "Test SBC passed." << std::endl;
         return true;
@@ -79,19 +79,20 @@ bool testAND()
     RAM ram;
     CPU cpu;
 
+    ram.writeByte(0x300, 0x03);
     ram.writeByte(0x200, 0x01);
     cpu.LDA(ram, 0x200);
     cpu.AND(ram, 0x300);
 
-    uint8_t value = ram.readByte(0x300);
-    if (cpu.A == 0x00)
+    
+    if (cpu.A == 0x01)
     {
         std::cout << "Test AND passed." << std::endl;
         return true;
     }
     else
     {
-        std::cout << "Value = " << std::hex << static_cast<int>(value) << std::endl;
+        std::cout << "Value = " << std::hex << static_cast<int>(cpu.A) << std::endl;
         std::cout << "Test AND failed." << std::endl;
         return false;
     }
